@@ -4,14 +4,32 @@
 #include "semaforos.h"
 #include "estacionamento.h"
 
+char* SENATRAN(){
+	char* placa = (char*)malloc((7 + 1) * sizeof(char));
+    const char* letras = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    const char* numeros = "0123456789";
+
+    placa[0] = letras[rand() % 26];
+    placa[1] = letras[rand() % 26];
+    placa[2] = letras[rand() % 26];
+    placa[3] = numeros[rand() % 10];
+    placa[4] = letras[rand() % 10];
+    placa[5] = numeros[rand() % 10];
+    placa[6] = numeros[rand() % 10];
+    placa[7] = '\0';
+
+    return placa;
+}
 
 // sim, o carro sai da concessionaria destinado a ir ao estacionamento kkkk
 CARRO* concessionaria(INTERVALO* perm){
 	CARRO *carro = (CARRO*)malloc(sizeof(CARRO));
 	uint8_t cor = rand() % NUM_CORES;
 	uint8_t modelo = rand() % NUM_MODELOS;
-	carro->tempo_permanencia = (uint16_t)(rand() % perm->max + perm->min);
+	carro->tempo_permanencia = (uint16_t)(rand() % (perm->max+1) + perm->min);
 	carro->vaga = 0;
+	carro->placa = SENATRAN();
+	
 	
 	switch(cor){
 		case VERMELHO:
@@ -37,23 +55,23 @@ CARRO* concessionaria(INTERVALO* perm){
 	
 	switch(modelo){
 		case FIAT:
-			carro->modelo = 'F';
+			carro->modelo = "Fiat";
 			break;
 		case FORD:
-			carro->modelo = 'D';
+			carro->modelo = "Ford";
 			break;
 		case CHEVROLET:
-			carro->modelo = 'C';
+			carro->modelo = "Chevrolet";
 			break;
 		case TOYOTA:
-			carro->modelo = 'T';
+			carro->modelo = "Toyota";
 			break;
 		case NISSAN:
-			carro->modelo = 'N';
+			carro->modelo = "Nissan";
 			break;
 		case VOLKSWAGEN:
 		default:
-			carro->modelo = 'V';
+			carro->modelo = "Volkswagen";
 			break;
 	}	
 	
@@ -90,6 +108,7 @@ void* carro_thread(void* carro_chegando){
 			carro->vaga->ocupada = true;
 			carro->tempo_espera->stop(carro->tempo_espera);
 			ticket = (void*)0;
+			update_media_carro(carro->tempo_espera->dt, carro->tempo_permanencia);
 		}
 		
 		//libera a fila do ticket		
@@ -109,10 +128,13 @@ void* carro_thread(void* carro_chegando){
 	
 	//passa na cancela de saida
 	sem_wait(&sem_cancelas_saida);
-	
+		
+	sem_wait(&mutex_ticket);
 	//ticket passado na cancela, vaga livre no sistema
-	carro->vaga->carro_estacionado = (CARRO*)0;
+	carro->vaga->carro_estacionado = (void*)0;
 	carro->vaga->ocupada = false;
+	
+	sem_post(&mutex_ticket);
 	
 	// libera a cancela
 	sem_post(&sem_cancelas_saida);

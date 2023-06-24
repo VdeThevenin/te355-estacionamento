@@ -12,14 +12,21 @@
 
 #define ESTACIONAMENTO_N_CANCELAS 		20
 
-#define ESTACIONAMENTO_TRAFEGO_DIARIO	100
+#define ESTACIONAMENTO_TRAFEGO_DIARIO	10000
+
+typedef struct ESTATISTICA_TAG{
+	uint16_t carros_passados;
+	uint16_t tempo_aberto;
+	float media_tempo_espera;
+	float media_tempo_permanencia;
+	float media_ocupacao;
+} ESTATISTICA;
 
 typedef struct VAGA_TAG{
 	uint32_t id;
 	CARRO* carro_estacionado;
 	bool ocupada;
 } VAGA;
-
 
 typedef struct VAGAS_DISPONIVEIS_TAG{
 	VAGA* vagas[ESTACIONAMENTO_VAGAS];
@@ -31,9 +38,14 @@ typedef struct ESTACIONAMENTO_TAG{
 	//uint32_t fila_cancelas[ESTACIONAMENTO_N_CANCELAS]; 
 	VAGA vagas[ESTACIONAMENTO_LINHAS][ESTACIONAMENTO_COLUNAS];
 	VAGAS_DISPONIVEIS vagas_disp;
+	ESTATISTICA* stats;
 } ESTACIONAMENTO;
 
+
 extern VAGA* ticket;
+extern ESTATISTICA estatistica;
+
+void update_media_carro(uint16_t espera, uint16_t permanencia);
 
 void* estacionamento_thread(void* none);
 

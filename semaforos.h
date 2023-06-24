@@ -10,6 +10,7 @@ extern sem_t sem_cancelas_entrada;
 extern sem_t sem_cancelas_saida;
 extern sem_t mutex_vaga;
 extern sem_t mutex_ticket;
+extern sem_t mutex_media;
 
 extern void inic_semaforo(void);
 

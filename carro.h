@@ -8,7 +8,8 @@ typedef struct VAGA_TAG VAGA;
 
 typedef struct CARRO_TAG{
 	char* cor;
-	char modelo;
+	char* modelo;
+	char* placa;
 	VAGA* vaga;
 	uint16_t tempo_permanencia;
 	struct TEMPORIZADOR_TAG* tempo_espera;
