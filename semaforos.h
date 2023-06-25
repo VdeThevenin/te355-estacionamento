@@ -12,6 +12,6 @@ extern sem_t mutex_vaga;
 extern sem_t mutex_ticket;
 extern sem_t mutex_media;
 
-extern void inic_semaforo(void);
+extern void inic_semaforo(pthread_attr_t* attr);
 
 #endif //SEMAFOROS_H
